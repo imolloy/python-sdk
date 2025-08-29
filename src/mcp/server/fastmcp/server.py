@@ -42,7 +42,7 @@ from mcp.server.streamable_http import EventStore
 from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.shared.context import LifespanContextT, RequestContext, RequestT
-from mcp.types import AnyFunction, ContentBlock, GetPromptResult, ToolAnnotations
+from mcp.types import AnyFunction, ContentBlock, GetPromptResult, ToolAnnotations, ToolDependencies
 from mcp.types import Prompt as MCPPrompt
 from mcp.types import PromptArgument as MCPPromptArgument
 from mcp.types import Resource as MCPResource
@@ -277,6 +277,7 @@ class FastMCP(Generic[LifespanResultT]):
                 inputSchema=info.parameters,
                 outputSchema=info.output_schema,
                 annotations=info.annotations,
+                dependencies=info.dependencies,                
             )
             for info in tools
         ]
@@ -345,6 +346,7 @@ class FastMCP(Generic[LifespanResultT]):
         title: str | None = None,
         description: str | None = None,
         annotations: ToolAnnotations | None = None,
+        dependencies: ToolDependencies | None = None,
         structured_output: bool | None = None,
     ) -> None:
         """Add a tool to the server.
@@ -358,6 +360,7 @@ class FastMCP(Generic[LifespanResultT]):
             title: Optional human-readable title for the tool
             description: Optional description of what the tool does
             annotations: Optional ToolAnnotations providing additional tool information
+            dependencies: Optional ToolDependencies providing the dependencies for the tool            
             structured_output: Controls whether the tool's output is structured or unstructured
                 - If None, auto-detects based on the function's return type annotation
                 - If True, unconditionally creates a structured tool (return type annotation permitting)
@@ -369,6 +372,7 @@ class FastMCP(Generic[LifespanResultT]):
             title=title,
             description=description,
             annotations=annotations,
+            dependencies=dependencies,
             structured_output=structured_output,
         )
 
@@ -378,6 +382,7 @@ class FastMCP(Generic[LifespanResultT]):
         title: str | None = None,
         description: str | None = None,
         annotations: ToolAnnotations | None = None,
+        dependencies: ToolDependencies | None = None,        
         structured_output: bool | None = None,
     ) -> Callable[[AnyFunction], AnyFunction]:
         """Decorator to register a tool.
@@ -391,6 +396,7 @@ class FastMCP(Generic[LifespanResultT]):
             title: Optional human-readable title for the tool
             description: Optional description of what the tool does
             annotations: Optional ToolAnnotations providing additional tool information
+            dependencies: Optional ToolDependencies providing the dependencies for the tool            
             structured_output: Controls whether the tool's output is structured or unstructured
                 - If None, auto-detects based on the function's return type annotation
                 - If True, unconditionally creates a structured tool (return type annotation permitting)
@@ -424,6 +430,7 @@ class FastMCP(Generic[LifespanResultT]):
                 title=title,
                 description=description,
                 annotations=annotations,
+                dependencies=dependencies,
                 structured_output=structured_output,
             )
             return fn

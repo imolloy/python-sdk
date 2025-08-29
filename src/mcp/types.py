@@ -840,6 +840,55 @@ class ToolAnnotations(BaseModel):
     model_config = ConfigDict(extra="allow")
 
 
+class ToolDependencies(BaseModel):
+    """
+    A set of optional dependencies to assist in describing the characteristics of the tool.
+    This set of dependencies should be provided by the server developer,
+    but they should not be used to drive decisions from untrusted clients.
+    """
+
+    network: bool | list[str] | None = None
+    """
+    If true, the tool will be making network calls. The list of endpoints the tool 
+    connects to can be specified as a list of CIDRs or FQDNs or as a list of strings.
+    Default: true
+    """
+
+    filesystem: bool | list[str] | None = None
+    """
+    If true, the tool would be reading or modifying the filesystem state. 
+    The list of filesystem paths that can be accessed can be specified as a list of paths.
+    Default: true
+    """
+
+    environment: bool | list[str] | None = None
+    """
+    If true, the tool will be reading or modifying environment variables (interactions).
+    The list of environment variables that the tool needs to access can be specified as a list
+    of environment variable names. 
+    Default: true
+    """
+
+    execution: bool | list[str] | None = None
+    """
+    If true, the tool will be making a binary call. It is important to note here that if there 
+    is a binary call any side-effect will be possible. For example, a homebrew too, 
+    will be calling the homebrew binary to perform specific actions. Maybe when we enable this, 
+    we need to enable the filesystem too. So, the binary execution flag should be enabled for this call.
+    The list of binaries that the tool needs to access can be specified as a list of binary paths.
+    Default: true
+    """
+
+    software_libraries: bool | list[str] | None = None
+    """
+    If true, the tool will be using third-party libraries 
+    to implement the required functionality. The list of the software third-party 
+    libraries a tool needs to access can be specified as a list of package names.
+    Default: false
+    """
+    model_config = ConfigDict(extra="allow")
+
+
 class Tool(BaseMetadata):
     """Definition for a tool the client can call."""
 
@@ -854,6 +903,12 @@ class Tool(BaseMetadata):
     """
     annotations: ToolAnnotations | None = None
     """Optional additional tool information."""
+    dependencies: ToolDependencies | None = None
+    """
+    Optional tool dependencies. These dependencies should showcase the characteristics 
+    of the tool. For example, if there is no need for network access,
+    the network capability should be set to false.
+    """    
     meta: dict[str, Any] | None = Field(alias="_meta", default=None)
     """
     See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)

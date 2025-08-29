@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 from mcp.server.fastmcp.exceptions import ToolError
 from mcp.server.fastmcp.utilities.func_metadata import FuncMetadata, func_metadata
-from mcp.types import ToolAnnotations
+from mcp.types import ToolAnnotations, ToolDependencies
 
 if TYPE_CHECKING:
     from mcp.server.fastmcp.server import Context
@@ -32,6 +32,7 @@ class Tool(BaseModel):
     is_async: bool = Field(description="Whether the tool is async")
     context_kwarg: str | None = Field(None, description="Name of the kwarg that should receive context")
     annotations: ToolAnnotations | None = Field(None, description="Optional annotations for the tool")
+    dependencies: ToolDependencies | None = Field(None, description="Optional dependencies for the tool")
 
     @cached_property
     def output_schema(self) -> dict[str, Any] | None:
@@ -46,6 +47,7 @@ class Tool(BaseModel):
         description: str | None = None,
         context_kwarg: str | None = None,
         annotations: ToolAnnotations | None = None,
+        dependencies: ToolDependencies | None = None,        
         structured_output: bool | None = None,
     ) -> Tool:
         """Create a Tool from a function."""
@@ -85,6 +87,7 @@ class Tool(BaseModel):
             is_async=is_async,
             context_kwarg=context_kwarg,
             annotations=annotations,
+            dependencies=dependencies,            
         )
 
     async def run(

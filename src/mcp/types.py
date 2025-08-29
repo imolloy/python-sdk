@@ -837,7 +837,36 @@ class ToolAnnotations(BaseModel):
     of a memory tool is not.
     Default: true
     """
+
+
+    readConfidentiality: str | None = None
+    """
+    Describes the confidentiality level of data sources this tool reads from.
+    "high" indicates that the tool reads from a confidential source (e.g., 
+    an HR tool accessing employee data), and "low" indicates the tool reads from a 
+    non-sensitive or public source (e.g., a blogging platform like Medium).
+    Default: "low"
+    """
+
+    writeConfidentiality: str | None = None
+    """
+    Describes the confidentiality level of the data sink this tool writes to.
+    For example, a value of "high" indicates that the tool writes to a highly
+    confidential sink (e.g., internal employee database), while "low" means the 
+    tool writes to a low-confidentiality sink (e.g., an external blogging platform).
+    Default: "low"
+    """
+
+    integrity: str | None = None
+    """
+    Describes the integrity level of the tool, set by the CISO or tool deployer.
+    For example, a value of "high" indicates that the tool is enterprise-verified, 
+    whereas "low" means the tool is unverified or not trusted by the enterprise.
+    Default: "low"
+    """
+
     model_config = ConfigDict(extra="allow")
+
 
 
 class Tool(BaseMetadata):
